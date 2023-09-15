@@ -19,4 +19,9 @@ def send(msg):
     client.send(send_length)
     client.send(message)
 
-send("Hello World!")    
+send("Hello World!")   
+send("Hello Alex!")    
+send("Hello Meta!")    
+
+# Disconnect from server
+send(DISCONNECT_MESSAGE)
