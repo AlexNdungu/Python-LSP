@@ -22,20 +22,29 @@ def handle_client(conn, addr):
     connected = True
     while connected:
         msg_length = conn.recv(HEADER).decode(FORMAT)
-        msg_length = int(msg_length)
-        msg = conn.recv(msg_length).decode(FORMAT)
-        print(f"[{addr}] {msg}")
+
+        if msg_length:
+            msg_length = int(msg_length)
+            msg = conn.recv(msg_length).decode(FORMAT)
+            print(f"[{addr}] {msg}")
+
+            # Disconnect client
+            if msg == DISCONNECT_MESSAGE:
+                connected = False
+    
+    conn.close()
 
 
 # Start server
 def start():
-    server.listen()
 
+    server.listen()
+    print(f"[LISTENING] Server is listening on {SERVER}")
     while True:
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
-        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+        print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
         
 
 
