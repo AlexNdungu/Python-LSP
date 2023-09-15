@@ -1,5 +1,6 @@
 import subprocess
 import json
+import os
 
 # Path to pylsp executable
 PYLSP_PATH = "./LangSP/Scripts/pylsp.exe"
@@ -24,6 +25,9 @@ lsp = subprocess.Popen([PYLSP_PATH], stdin=subprocess.PIPE, stdout=subprocess.PI
 
 def send_request(method, params):
     """Send a JSON-RPC request to the language server and return the response."""
+
+    print("Sending request: " + method)
+
     global REQUEST_ID
     # Increment the request ID
     REQUEST_ID += 1
@@ -34,14 +38,19 @@ def send_request(method, params):
         "method": method,
         "params": params
     }
+
     # Encode the request as JSON
     request_json = json.dumps(request)
     # Write the request to the language server's stdin
     lsp.stdin.write(request_json.encode())
     lsp.stdin.write(b'\n')
     lsp.stdin.flush()
+
+    print(lsp)
+
     # Read the response from the language server's stdout
     response_json = lsp.stdout.readline()
+    print(response_json)
     # Decode the response as JSON
     response = json.loads(response_json)
     # Return the response
@@ -70,3 +79,16 @@ def read_message():
     message = json.loads(message_json)
     # Return the message
     return message
+
+
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+
+initialize_params = {
+    "rootUri": "file://C:/Users/Alex Meta Ndung'u/Documents/Py Projects/LSP",
+    "capabilities": CAPABILITIES,
+    "initializationOptions": {}
+}
+
+initialize_response = send_request("initialize", initialize_params)
+print(initialize_response)
